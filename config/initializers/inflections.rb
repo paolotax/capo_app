@@ -14,3 +14,9 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular "materia",     "materie"
+  inflect.irregular "caricamento", "caricamenti"
+  inflect.irregular "riga_capo",   "righe_capo"
+end
