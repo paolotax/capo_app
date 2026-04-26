@@ -84,6 +84,7 @@ export default class extends Controller {
       materia.open = !isDemoting
       materia.dataset.demoted = isDemoting
       this._refreshZone(panel)
+      this._updateHeaderStats()
     })
   }
 
@@ -156,9 +157,12 @@ export default class extends Controller {
     const panel = this.panelTargets.find(p => p.dataset.classe === this.activeTab)
     if (!panel) return
     if (this.hasClasseRomanTarget) this.classeRomanTarget.textContent = panel.dataset.roman
-    if (this.hasMaterieCountTarget) this.materieCountTarget.textContent = panel.dataset.materieCount
+    if (this.hasMaterieCountTarget) {
+      const n = panel.querySelectorAll('[data-zone="primary"] [data-materia-codice]').length
+      this.materieCountTarget.textContent = n
+    }
     if (this.hasTitoliCountTarget) {
-      const n = panel.querySelectorAll("[data-row]").length
+      const n = panel.querySelectorAll('[data-zone="primary"] [data-row]').length
       this.titoliCountTarget.textContent = n
     }
   }
