@@ -5,13 +5,13 @@
       <%= materia.nome %> <span class="text-gray-500">(<%= materia.codice %>)</span>
     </span>
     <button type="button"
-            class="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+            class="text-base px-2 py-1 border rounded hover:bg-gray-100"
             data-action="demote"
-            title="Sposta sotto">↓</button>
+            title="OK — clicca per spostare in 'Da controllare'">👍</button>
     <button type="button"
-            class="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+            class="text-base px-2 py-1 border rounded hover:bg-gray-100"
             data-action="promote"
-            title="Riporta su" hidden>↑</button>
+            title="Da controllare — clicca per riportare su" hidden>👎</button>
   </summary>
 
   <% righe = ClassificaQuery.new(classe: classe, materia: materia).righe %>

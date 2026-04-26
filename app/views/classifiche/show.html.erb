@@ -7,7 +7,7 @@
       </span>
       <button type="button"
               class="px-3 py-1 border rounded hover:bg-gray-100"
-              data-action="hide-all-demoted">Nascondi demoted</button>
+              data-action="hide-all-demoted">Nascondi "Da controllare"</button>
       <button type="button"
               class="px-3 py-1 border rounded hover:bg-gray-100"
               data-action="reset">Mostra tutto</button>
@@ -25,7 +25,9 @@
         <% end %>
       </div>
 
-      <hr data-divider class="my-6 border-gray-300" hidden>
+      <div data-divider class="my-6 border-t border-gray-300 pt-4" hidden>
+        <h3 class="text-sm uppercase tracking-wide text-gray-500 mb-3">Da controllare</h3>
+      </div>
 
       <div data-zone="demoted" class="opacity-75">
         <%# popolato dinamicamente dal JS %>
