@@ -18,7 +18,7 @@ class ClassificheControllerTest < ActionDispatch::IntegrationTest
 
     get classifica_path
     assert_response :success
-    assert_select "h2", /Classe 4/
+    assert_select "summary", /Classe 4/
     assert_select "td", /FOO/
   end
 end

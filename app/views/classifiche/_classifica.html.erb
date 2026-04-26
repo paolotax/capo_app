@@ -1,6 +1,17 @@
-<details class="mb-6 border rounded p-4" open>
-  <summary class="font-medium text-lg cursor-pointer">
-    <%= materia.nome %> <span class="text-gray-500">(<%= materia.codice %>)</span>
+<details class="mb-6 border rounded p-4"
+         data-materia-codice="<%= materia.codice %>" open>
+  <summary class="font-medium text-lg cursor-pointer flex items-center gap-2">
+    <span class="flex-1">
+      <%= materia.nome %> <span class="text-gray-500">(<%= materia.codice %>)</span>
+    </span>
+    <button type="button"
+            class="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+            data-action="demote"
+            title="Sposta sotto">↓</button>
+    <button type="button"
+            class="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+            data-action="promote"
+            title="Riporta su" hidden>↑</button>
   </summary>
 
   <% righe = ClassificaQuery.new(classe: classe, materia: materia).righe %>

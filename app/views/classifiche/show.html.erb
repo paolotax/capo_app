@@ -1,19 +1,121 @@
-<div class="max-w-7xl mx-auto p-6 space-y-12">
-  <header class="flex items-center justify-between">
+<div class="max-w-7xl mx-auto p-6 space-y-12" data-demote-root>
+  <header class="flex items-center justify-between flex-wrap gap-3">
     <h1 class="text-3xl font-bold">Classifiche</h1>
-    <div class="text-sm text-gray-600">
-      <%= @ultimo_caricamento.filename %> — <%= l @ultimo_caricamento.caricato_il, format: :short %>
-      <%= link_to "Sostituisci file", new_caricamento_path, class: "ml-3 underline" %>
+    <div class="flex items-center gap-3 text-sm">
+      <span class="text-gray-600">
+        <%= @ultimo_caricamento.filename %> — <%= l @ultimo_caricamento.caricato_il, format: :short %>
+      </span>
+      <button type="button"
+              class="px-3 py-1 border rounded hover:bg-gray-100"
+              data-action="hide-all-demoted">Nascondi demoted</button>
+      <button type="button"
+              class="px-3 py-1 border rounded hover:bg-gray-100"
+              data-action="reset">Mostra tutto</button>
+      <%= link_to "Sostituisci file", new_caricamento_path, class: "underline" %>
     </div>
   </header>
 
   <% @classifiche.each do |classe, materie| %>
-    <section>
-      <h2 class="text-2xl font-semibold mb-4">Classe <%= classe %></h2>
+    <details class="space-y-4" data-classe-section="<%= classe %>" open>
+      <summary class="text-2xl font-semibold cursor-pointer">Classe <%= classe %></summary>
 
-      <% materie.each do |materia| %>
-        <%= render "classifica", classe: classe, materia: materia %>
-      <% end %>
-    </section>
+      <div data-zone="primary" class="mt-4">
+        <% materie.each do |materia| %>
+          <%= render "classifica", classe: classe, materia: materia %>
+        <% end %>
+      </div>
+
+      <hr data-divider class="my-6 border-gray-300" hidden>
+
+      <div data-zone="demoted" class="opacity-75">
+        <%# popolato dinamicamente dal JS %>
+      </div>
+    </details>
   <% end %>
 </div>
+
+<script>
+(function () {
+  const STORAGE_KEY = "capo:demoted";
+  const HIDE_KEY    = "capo:hideDemoted";
+
+  function loadDemoted() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      return new Set(Array.isArray(arr) ? arr : []);
+    } catch (_) { return new Set(); }
+  }
+  function saveDemoted(set) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...set])); } catch (_) {}
+  }
+  function loadHide() {
+    try { return localStorage.getItem(HIDE_KEY) === "true"; } catch (_) { return false; }
+  }
+  function saveHide(v) {
+    try { localStorage.setItem(HIDE_KEY, v ? "true" : "false"); } catch (_) {}
+  }
+
+  const root = document.querySelector("[data-demote-root]");
+  if (!root) return;
+
+  const demoted = loadDemoted();
+  let hideDemoted = loadHide();
+
+  function applyState() {
+    root.querySelectorAll("[data-classe-section]").forEach((section) => {
+      const classe = section.dataset.classeSection;
+      const primary = section.querySelector('[data-zone="primary"]');
+      const demotedZone = section.querySelector('[data-zone="demoted"]');
+      const divider = section.querySelector("[data-divider]");
+
+      section.querySelectorAll("[data-materia-codice]").forEach((materia) => {
+        const codice = materia.dataset.materiaCodice;
+        const key = `${classe}:${codice}`;
+        const isDemoted = demoted.has(key);
+        const target = isDemoted ? demotedZone : primary;
+        if (materia.parentNode !== target) target.appendChild(materia);
+        materia.open = !isDemoted;
+        const downBtn = materia.querySelector('[data-action="demote"]');
+        const upBtn   = materia.querySelector('[data-action="promote"]');
+        if (downBtn) downBtn.hidden = isDemoted;
+        if (upBtn)   upBtn.hidden   = !isDemoted;
+      });
+
+      const hasDemoted = demotedZone.children.length > 0;
+      divider.hidden = !hasDemoted || hideDemoted;
+      demotedZone.hidden = hideDemoted;
+    });
+  }
+
+  root.addEventListener("click", (e) => {
+    const target = e.target.closest("[data-action]");
+    if (!target || !root.contains(target)) return;
+    const action = target.dataset.action;
+
+    if (action === "demote" || action === "promote") {
+      e.preventDefault();
+      e.stopPropagation();
+      const materia = target.closest("[data-materia-codice]");
+      const section = materia.closest("[data-classe-section]");
+      const key = `${section.dataset.classeSection}:${materia.dataset.materiaCodice}`;
+      if (action === "demote") demoted.add(key); else demoted.delete(key);
+      saveDemoted(demoted);
+      applyState();
+    } else if (action === "hide-all-demoted") {
+      hideDemoted = true;
+      saveHide(true);
+      applyState();
+    } else if (action === "reset") {
+      demoted.clear();
+      saveDemoted(demoted);
+      hideDemoted = false;
+      saveHide(false);
+      applyState();
+    }
+  });
+
+  applyState();
+})();
+</script>
