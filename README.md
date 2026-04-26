@@ -1,28 +1,39 @@
-# README
+# capo_app
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Single-user Rails app for the boss: ingest a tab-separated ASCII file of
+national textbook adoption aggregates and produce market-share rankings by
+class × subject (materia).
 
-Things you may want to cover:
+## Local development
 
-* Ruby version
+```bash
+bin/setup
+bin/dev
+```
 
-* System dependencies
+Open http://localhost:3000 — empty DB redirects to `/caricamenti/new`.
 
-* Configuration
+Sample fixture: `test/fixtures/files/sample_capo.txt`.
 
-* Database creation
+## Tests
 
-* Database initialization
+```bash
+bin/rails test
+bin/rails test:system
+```
 
-* How to run the test suite
+## Production / Once deploy
 
-* Services (job queues, cache servers, search engines, etc.)
+Set env vars:
 
-* Deployment instructions
+- `APP_USERNAME` — HTTP basic auth user
+- `APP_PASSWORD` — HTTP basic auth password
+- `RAILS_MASTER_KEY` — from `config/master.key`
 
-* ...
+Then `kamal deploy` (or whatever Once uses).
 
-## Auth
+## Data format
 
-In production, set `APP_USERNAME` and `APP_PASSWORD` env vars. HTTP basic auth gates the entire app. In development/test no auth is required.
+See `docs/plans/2026-04-25-classifiche-capo-design.md` and
+`docs/plans/2026-04-25-classifiche-capo-plan.md` for the column-by-column
+contract of the input file.
