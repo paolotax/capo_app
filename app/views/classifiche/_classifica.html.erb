@@ -74,14 +74,14 @@
       </thead>
       <tbody data-classifiche-target="rows">
         <% righe.each_with_index do |r, i| %>
-          <tr class="border-b border-stone-100 last:border-0 hover:bg-stone-50/60
-                     <%= "hidden" if i >= 10 %>"
+          <tr class="border-b border-stone-100 last:border-0 hover:bg-stone-50/60"
               data-row
               data-extra="<%= i >= 10 %>"
               data-titolo="<%= r["titolo"].to_s.downcase %>"
               data-autore="<%= r["autore"].to_s.downcase %>"
               data-isbn="<%= r["isbn"] %>"
-              data-editore="<%= r["editore"] %>">
+              data-editore="<%= r["editore"] %>"
+              <%= "hidden" if i >= 10 %>>
             <td class="py-2.5 pr-3">
               <span class="font-serif italic text-lg <%= i.zero? ? 'text-orange-700 not-italic font-semibold' : 'text-stone-400' %>">
                 <%= i + 1 %>
