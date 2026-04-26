@@ -1,0 +1,19 @@
+<div class="mx-auto max-w-xl p-8">
+  <h1 class="text-2xl font-bold mb-6">Carica file ASCII</h1>
+
+  <% if @error.present? %>
+    <p class="error mb-4 text-red-600"><%= @error %></p>
+  <% end %>
+
+  <%= form_with url: caricamenti_path, multipart: true, local: true, class: "space-y-4" do %>
+    <input type="file" name="file" accept=".txt" required class="block">
+    <button type="submit" class="bg-black text-white px-4 py-2 rounded">Carica</button>
+  <% end %>
+
+  <% if (last = Caricamento.order(:caricato_il).last) %>
+    <p class="mt-8 text-sm text-gray-600">
+      Ultimo caricamento: <%= last.filename %> — <%= l last.caricato_il, format: :short %>
+      (<%= last.righe_count %> righe)
+    </p>
+  <% end %>
+</div>

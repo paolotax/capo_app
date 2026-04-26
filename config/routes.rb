@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   # get "offline" => "rails/pwa#offline", as: :pwa_offline
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  resources :caricamenti, only: %i[new create destroy]
+  resource  :classifica,   only: :show
+
+  root "classifiche#show"
 end
