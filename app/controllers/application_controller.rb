@@ -6,8 +6,8 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   http_basic_authenticate_with(
-    name:     ENV.fetch("APP_USERNAME", "capo"),
-    password: ENV.fetch("APP_PASSWORD", "capo"),
+    name:     ENV.fetch("APP_USERNAME", "simone"),
+    password: ENV.fetch("APP_PASSWORD", "vannini"),
     if:       -> { Rails.env.production? }
   )
 end
