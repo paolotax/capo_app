@@ -10,7 +10,7 @@
       <tr class="text-left border-b">
         <th class="py-1 pr-3">#</th>
         <th class="py-1 pr-3">Titolo</th>
-        <th class="py-1 pr-3">Autore</th>
+        <th class="py-1 pr-3">ISBN</th>
         <th class="py-1 pr-3">Editore</th>
         <th class="py-1 pr-3 text-right">Sezioni</th>
         <th class="py-1 pr-3 text-right">Alunni</th>
@@ -22,7 +22,7 @@
         <tr class="border-b">
           <td class="py-1 pr-3"><%= i + 1 %></td>
           <td class="py-1 pr-3"><%= r["titolo"] %></td>
-          <td class="py-1 pr-3"><%= r["autore"] %></td>
+          <td class="py-1 pr-3 font-mono text-xs"><%= r["isbn"] %></td>
           <td class="py-1 pr-3"><%= r["editore"] %></td>
           <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["sezioni"] %></td>
           <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["alunni"] %></td>
