@@ -105,29 +105,39 @@
     });
   }
 
-  function applyState() {
+  function moveAndUpdateButtons(materia, isDemoted) {
+    const section = materia.closest("[data-classe-section]");
+    const target = section.querySelector(
+      isDemoted ? '[data-zone="demoted"]' : '[data-zone="primary"]'
+    );
+    if (materia.parentNode !== target) target.appendChild(materia);
+    const downBtn = materia.querySelector('[data-action="demote"]');
+    const upBtn   = materia.querySelector('[data-action="promote"]');
+    if (downBtn) downBtn.hidden = isDemoted;
+    if (upBtn)   upBtn.hidden   = !isDemoted;
+  }
+
+  function refreshZones() {
     sections.forEach((section) => {
-      const classe = section.dataset.classeSection;
-      const primary = section.querySelector('[data-zone="primary"]');
       const demotedZone = section.querySelector('[data-zone="demoted"]');
       const divider = section.querySelector("[data-divider]");
-
-      section.querySelectorAll("[data-materia-codice]").forEach((materia) => {
-        const codice = materia.dataset.materiaCodice;
-        const key = `${classe}:${codice}`;
-        const isDemoted = demoted.has(key);
-        const target = isDemoted ? demotedZone : primary;
-        if (materia.parentNode !== target) target.appendChild(materia);
-        const downBtn = materia.querySelector('[data-action="demote"]');
-        const upBtn   = materia.querySelector('[data-action="promote"]');
-        if (downBtn) downBtn.hidden = isDemoted;
-        if (upBtn)   upBtn.hidden   = !isDemoted;
-      });
-
       const hasDemoted = demotedZone.children.length > 0;
       divider.hidden = !hasDemoted || hideDemoted;
       demotedZone.hidden = !hasDemoted || hideDemoted;
     });
+  }
+
+  function initializeLayout() {
+    sections.forEach((section) => {
+      const classe = section.dataset.classeSection;
+      section.querySelectorAll("[data-materia-codice]").forEach((materia) => {
+        const codice = materia.dataset.materiaCodice;
+        const isDemoted = demoted.has(`${classe}:${codice}`);
+        moveAndUpdateButtons(materia, isDemoted);
+        materia.open = !isDemoted;
+      });
+    });
+    refreshZones();
   }
 
   root.addEventListener("click", (e) => {
@@ -141,19 +151,27 @@
       const materia = target.closest("[data-materia-codice]");
       const section = materia.closest("[data-classe-section]");
       const key = `${section.dataset.classeSection}:${materia.dataset.materiaCodice}`;
-      if (action === "demote") demoted.add(key); else demoted.delete(key);
+      const isDemoting = action === "demote";
+      if (isDemoting) demoted.add(key); else demoted.delete(key);
       saveDemoted(demoted);
-      applyState();
+      moveAndUpdateButtons(materia, isDemoting);
+      materia.open = !isDemoting;
+      refreshZones();
     } else if (action === "hide-all-demoted") {
       hideDemoted = true;
       saveHide(true);
-      applyState();
+      refreshZones();
     } else if (action === "reset") {
+      sections.forEach((section) => {
+        section.querySelectorAll('[data-zone="demoted"] [data-materia-codice]').forEach((materia) => {
+          moveAndUpdateButtons(materia, false);
+        });
+      });
       demoted.clear();
       saveDemoted(demoted);
       hideDemoted = false;
       saveHide(false);
-      applyState();
+      refreshZones();
     } else if (action === "select-tab") {
       activeTab = target.dataset.tab;
       saveTab(activeTab);
@@ -162,6 +180,6 @@
   });
 
   applyTab();
-  applyState();
+  initializeLayout();
 })();
 </script>
