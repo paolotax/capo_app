@@ -10,7 +10,7 @@
               data-action="hide-all-demoted">Nascondi "Da controllare"</button>
       <button type="button"
               class="px-3 py-1 border rounded hover:bg-gray-100"
-              data-action="reset">Mostra tutto</button>
+              data-action="show-demoted">Mostra "Da controllare"</button>
       <%= link_to "Sostituisci file", new_caricamento_path, class: "underline" %>
     </div>
   </header>
@@ -161,14 +161,7 @@
       hideDemoted = true;
       saveHide(true);
       refreshZones();
-    } else if (action === "reset") {
-      sections.forEach((section) => {
-        section.querySelectorAll('[data-zone="demoted"] [data-materia-codice]').forEach((materia) => {
-          moveAndUpdateButtons(materia, false);
-        });
-      });
-      demoted.clear();
-      saveDemoted(demoted);
+    } else if (action === "show-demoted") {
       hideDemoted = false;
       saveHide(false);
       refreshZones();
