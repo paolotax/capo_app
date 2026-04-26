@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto p-6 space-y-12" data-demote-root>
+<div class="max-w-7xl mx-auto p-6 space-y-6" data-demote-root>
   <header class="flex items-center justify-between flex-wrap gap-3">
     <h1 class="text-3xl font-bold">Classifiche</h1>
     <div class="flex items-center gap-3 text-sm">
@@ -15,11 +15,25 @@
     </div>
   </header>
 
-  <% @classifiche.each do |classe, materie| %>
-    <details class="space-y-4" data-classe-section="<%= classe %>" open>
-      <summary class="text-2xl font-semibold cursor-pointer">Classe <%= classe %></summary>
+  <nav class="flex gap-1 border-b" role="tablist">
+    <% @classifiche.each_with_index do |(classe, _materie), i| %>
+      <button type="button"
+              role="tab"
+              data-action="select-tab"
+              data-tab="<%= classe %>"
+              aria-selected="<%= i.zero? %>"
+              class="px-5 py-2 text-lg font-semibold border-b-2 -mb-px
+                     <%= i.zero? ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
+        Classe <%= classe %>
+      </button>
+    <% end %>
+  </nav>
 
-      <div data-zone="primary" class="mt-4">
+  <% @classifiche.each_with_index do |(classe, materie), i| %>
+    <section role="tabpanel"
+             data-classe-section="<%= classe %>"
+             <%= "hidden" unless i.zero? %>>
+      <div data-zone="primary">
         <% materie.each do |materia| %>
           <%= render "classifica", classe: classe, materia: materia %>
         <% end %>
@@ -32,7 +46,7 @@
       <div data-zone="demoted" class="opacity-75">
         <%# popolato dinamicamente dal JS %>
       </div>
-    </details>
+    </section>
   <% end %>
 </div>
 
@@ -40,6 +54,7 @@
 (function () {
   const STORAGE_KEY = "capo:demoted";
   const HIDE_KEY    = "capo:hideDemoted";
+  const TAB_KEY     = "capo:activeTab";
 
   function loadDemoted() {
     try {
@@ -58,15 +73,40 @@
   function saveHide(v) {
     try { localStorage.setItem(HIDE_KEY, v ? "true" : "false"); } catch (_) {}
   }
+  function loadTab() {
+    try { return localStorage.getItem(TAB_KEY); } catch (_) { return null; }
+  }
+  function saveTab(t) {
+    try { localStorage.setItem(TAB_KEY, t); } catch (_) {}
+  }
 
   const root = document.querySelector("[data-demote-root]");
   if (!root) return;
 
   const demoted = loadDemoted();
   let hideDemoted = loadHide();
+  let activeTab = loadTab();
+
+  const sections = [...root.querySelectorAll("[data-classe-section]")];
+  const tabs = [...root.querySelectorAll('[data-action="select-tab"]')];
+  const validTabs = sections.map(s => s.dataset.classeSection);
+  if (!validTabs.includes(activeTab)) activeTab = validTabs[0];
+
+  function applyTab() {
+    sections.forEach(s => { s.hidden = s.dataset.classeSection !== activeTab; });
+    tabs.forEach(btn => {
+      const isActive = btn.dataset.tab === activeTab;
+      btn.setAttribute("aria-selected", isActive);
+      btn.classList.toggle("border-blue-500", isActive);
+      btn.classList.toggle("text-blue-600", isActive);
+      btn.classList.toggle("border-transparent", !isActive);
+      btn.classList.toggle("text-gray-500", !isActive);
+      btn.classList.toggle("hover:text-gray-700", !isActive);
+    });
+  }
 
   function applyState() {
-    root.querySelectorAll("[data-classe-section]").forEach((section) => {
+    sections.forEach((section) => {
       const classe = section.dataset.classeSection;
       const primary = section.querySelector('[data-zone="primary"]');
       const demotedZone = section.querySelector('[data-zone="demoted"]');
@@ -115,9 +155,14 @@
       hideDemoted = false;
       saveHide(false);
       applyState();
+    } else if (action === "select-tab") {
+      activeTab = target.dataset.tab;
+      saveTab(activeTab);
+      applyTab();
     }
   });
 
+  applyTab();
   applyState();
 })();
 </script>
