@@ -8,7 +8,7 @@
       <button type="button"
               class="px-3 py-1 border rounded hover:bg-gray-100"
               data-action="toggle-demoted"
-              data-toggle-target>Nascondi "Da controllare"</button>
+              data-toggle-target>Nascondi 👎</button>
       <%= link_to "Sostituisci file", new_caricamento_path, class: "underline" %>
     </div>
   </header>
@@ -38,7 +38,7 @@
       </div>
 
       <div data-divider class="my-6 border-t border-gray-300 pt-4" hidden>
-        <h3 class="text-sm uppercase tracking-wide text-gray-500 mb-3">Da controllare</h3>
+        <h3 class="text-sm uppercase tracking-wide text-gray-500 mb-3">👎</h3>
       </div>
 
       <div data-zone="demoted" class="bg-gray-100 rounded p-4">
@@ -117,7 +117,7 @@
 
   function updateToggleLabel() {
     const btn = root.querySelector("[data-toggle-target]");
-    if (btn) btn.textContent = hideDemoted ? 'Mostra "Da controllare"' : 'Nascondi "Da controllare"';
+    if (btn) btn.textContent = hideDemoted ? "Mostra 👎" : "Nascondi 👎";
   }
 
   function refreshZones() {
