@@ -38,7 +38,9 @@
               <span class="font-serif italic text-xl leading-none text-orange-700
                            text-center group-aria-selected:text-stone-50"><%= %w[I II III IV V][classe-1] %></span>
               <span class="text-sm">Classe <%= classe %></span>
-              <span class="text-[11px] tabular-nums text-stone-400"><%= materie.size %></span>
+              <span class="text-[11px] tabular-nums text-stone-400"
+                    data-classifiche-target="tabCount"
+                    data-tab-count="<%= classe %>"><%= materie.size %></span>
             </button>
           <% end %>
         </nav>

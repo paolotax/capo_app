@@ -10,7 +10,7 @@ export default class extends Controller {
   static targets = [
     "panel", "tab", "tabMobile", "materia",
     "search", "editoreFilter", "toggleHide",
-    "classeRoman", "materieCount", "titoliCount"
+    "classeRoman", "materieCount", "titoliCount", "tabCount"
   ]
   static values = {
     storageKey: { type: String, default: "capo:demoted" },
@@ -27,6 +27,7 @@ export default class extends Controller {
     this._initLayout()
     this._updateToggleLabel()
     this._updateHeaderStats()
+    this._updateTabCounts()
   }
 
   // ── Tab ─────────────────────────────────────────────────
@@ -85,6 +86,7 @@ export default class extends Controller {
       materia.dataset.demoted = isDemoting
       this._refreshZone(panel)
       this._updateHeaderStats()
+      this._updateTabCounts()
     })
   }
 
@@ -150,6 +152,17 @@ export default class extends Controller {
     materia.dataset.showAll = "true"
     materia.querySelectorAll("[data-row][data-extra='true']").forEach(r => r.hidden = false)
     e.currentTarget.parentElement.hidden = true
+  }
+
+  _updateTabCounts() {
+    if (!this.hasTabCountTarget) return
+    this.panelTargets.forEach(panel => {
+      const classe = panel.dataset.classe
+      const count = panel.querySelectorAll('[data-zone="primary"] [data-materia-codice]').length
+      this.tabCountTargets
+        .filter(t => t.dataset.tabCount === classe)
+        .forEach(t => { t.textContent = count })
+    })
   }
 
   // ── Stats header ────────────────────────────────────────
