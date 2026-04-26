@@ -5,7 +5,7 @@
 # Materie seed — codici noti dal file ASCII del capo
 # Ordine: come vogliamo vederle nelle tab della pagina classifiche.
 materie = [
-  { codice: 1200, nome: "Libro della Prima",                ordine:  5 },
+  { codice: 1200, nome: "Sussidiario 1° Biennio",           ordine:  5 },
   { codice: 1300, nome: "Libro della Prima",                ordine:  6 },
   { codice:  200, nome: "Sussidiario Linguaggi",            ordine: 10 },
   { codice:  300, nome: "Sussidiario Discipline",           ordine: 20 },
@@ -24,8 +24,6 @@ materie = [
 ]
 
 materie.each do |attrs|
-  Materia.find_or_create_by!(codice: attrs[:codice]) do |m|
-    m.nome   = attrs[:nome]
-    m.ordine = attrs[:ordine]
-  end
+  m = Materia.find_or_initialize_by(codice: attrs[:codice])
+  m.update!(nome: attrs[:nome], ordine: attrs[:ordine])
 end
