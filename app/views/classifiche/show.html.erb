@@ -43,7 +43,7 @@
         <h3 class="text-sm uppercase tracking-wide text-gray-500 mb-3">Da controllare</h3>
       </div>
 
-      <div data-zone="demoted" class="opacity-75">
+      <div data-zone="demoted" class="bg-gray-100 rounded p-4">
         <%# popolato dinamicamente dal JS %>
       </div>
     </section>
@@ -127,7 +127,7 @@
 
       const hasDemoted = demotedZone.children.length > 0;
       divider.hidden = !hasDemoted || hideDemoted;
-      demotedZone.hidden = hideDemoted;
+      demotedZone.hidden = !hasDemoted || hideDemoted;
     });
   }
 
