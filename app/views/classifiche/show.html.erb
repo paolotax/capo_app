@@ -1,179 +1,146 @@
-<div class="max-w-7xl mx-auto p-6 space-y-6" data-demote-root>
-  <header class="flex items-center justify-between flex-wrap gap-3">
-    <h1 class="text-3xl font-bold">Classifiche</h1>
-    <div class="flex items-center gap-3 text-sm">
-      <span class="text-gray-600">
-        <%= @ultimo_caricamento.filename %> — <%= l @ultimo_caricamento.caricato_il, format: :short %>
-      </span>
-      <button type="button"
-              class="px-3 py-1 border rounded hover:bg-gray-100"
-              data-action="toggle-demoted"
-              data-toggle-target>Nascondi 👎</button>
-      <%= link_to "Sostituisci file", new_caricamento_path, class: "underline" %>
-    </div>
-  </header>
+<% content_for :title, "Classifiche" %>
 
-  <nav class="flex gap-1 border-b" role="tablist">
-    <% @classifiche.each_with_index do |(classe, _materie), i| %>
-      <button type="button"
-              role="tab"
-              data-action="select-tab"
-              data-tab="<%= classe %>"
-              aria-selected="<%= i.zero? %>"
-              class="px-5 py-2 text-lg font-semibold border-b-2 -mb-px
-                     <%= i.zero? ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
-        Classe <%= classe %>
-      </button>
-    <% end %>
-  </nav>
+<div class="min-h-screen bg-stone-50 text-stone-900"
+     data-controller="classifiche"
+     data-classifiche-storage-key-value="capo:demoted"
+     data-classifiche-hide-key-value="capo:hideDemoted"
+     data-classifiche-tab-key-value="capo:activeTab">
 
-  <% @classifiche.each_with_index do |(classe, materie), i| %>
-    <section role="tabpanel"
-             data-classe-section="<%= classe %>"
-             <%= "hidden" unless i.zero? %>>
-      <div data-zone="primary">
-        <% materie.each do |materia| %>
-          <%= render "classifica", classe: classe, materia: materia %>
+  <div class="grid grid-cols-1 lg:grid-cols-[248px_1fr]">
+
+    <%# ── SIDEBAR ─────────────────────────────────────────── %>
+    <aside class="hidden lg:flex lg:flex-col gap-6 sticky top-0 h-screen px-5 py-6
+                  bg-stone-100/70 border-r border-stone-200">
+      <div>
+        <div class="flex items-baseline gap-2 px-1">
+          <span class="font-serif italic text-3xl leading-none text-orange-700">✺</span>
+          <span class="font-serif text-xl tracking-tight">Capo</span>
+        </div>
+        <div class="mt-1 px-1 text-[11px] uppercase tracking-[0.14em] text-stone-500">
+          Classifiche adozioni
+        </div>
+      </div>
+
+      <div>
+        <div class="px-1 pb-2 mb-1 text-[11px] uppercase tracking-[0.14em] text-stone-500
+                    border-b border-stone-200">Classi</div>
+        <nav class="flex flex-col gap-0.5">
+          <% @classifiche.each_with_index do |(classe, materie), i| %>
+            <button type="button"
+                    role="tab"
+                    data-action="click->classifiche#selectTab"
+                    data-classifiche-target="tab"
+                    data-tab="<%= classe %>"
+                    aria-selected="<%= i.zero? %>"
+                    class="grid grid-cols-[28px_1fr_auto] items-center gap-2 px-2.5 py-2
+                           rounded-md text-left text-stone-700 hover:bg-stone-200/60 transition
+                           aria-selected:bg-stone-900 aria-selected:text-stone-50">
+              <span class="font-serif italic text-xl leading-none text-orange-700
+                           text-center group-aria-selected:text-stone-50"><%= %w[I II III IV V][classe-1] %></span>
+              <span class="text-sm">Classe <%= classe %></span>
+              <span class="text-[11px] tabular-nums text-stone-400"><%= materie.size %></span>
+            </button>
+          <% end %>
+        </nav>
+      </div>
+
+      <div class="mt-auto rounded-lg border border-stone-200 bg-white p-3 text-xs text-stone-500">
+        <span class="block font-mono text-[11px] text-stone-700 break-all mb-1">
+          <%= @ultimo_caricamento.filename %>
+        </span>
+        <span class="block mb-2">Caricato <%= l @ultimo_caricamento.caricato_il, format: :short %></span>
+        <%= link_to "Sostituisci file →", new_caricamento_path,
+              class: "text-orange-700 border-b border-orange-700/60 hover:border-orange-700" %>
+      </div>
+    </aside>
+
+    <%# ── MAIN ───────────────────────────────────────────── %>
+    <main class="px-6 lg:px-12 py-8 pb-24 max-w-[1400px]">
+
+      <header class="flex flex-wrap items-end justify-between gap-6 pb-5 mb-7
+                     border-b border-stone-200">
+        <h1 class="font-serif font-normal text-5xl lg:text-6xl leading-[0.95] tracking-tight m-0">
+          Classifiche
+          <em data-classifiche-target="classeRoman" class="italic text-orange-700 not-italic-fix">I</em>
+        </h1>
+        <div class="text-xs text-stone-500 text-right">
+          <div>
+            <span data-classifiche-target="materieCount" class="font-medium text-stone-700">—</span> materie ·
+            <span data-classifiche-target="titoliCount"  class="font-medium text-stone-700">—</span> titoli
+          </div>
+          <div>Aggiornate <%= l @ultimo_caricamento.caricato_il, format: :short %></div>
+        </div>
+      </header>
+
+      <%# Tab inline (mobile fallback per la sidebar) %>
+      <nav class="lg:hidden flex gap-1 p-1 mb-6 bg-stone-100 rounded-lg w-fit" role="tablist">
+        <% @classifiche.each_with_index do |(classe, _), i| %>
+          <button type="button"
+                  role="tab"
+                  data-action="click->classifiche#selectTab"
+                  data-classifiche-target="tabMobile"
+                  data-tab="<%= classe %>"
+                  aria-selected="<%= i.zero? %>"
+                  class="px-4 py-2 rounded-md text-sm text-stone-500
+                         aria-selected:bg-white aria-selected:text-stone-900 aria-selected:shadow-sm">
+            <span class="font-serif italic text-orange-700"><%= %w[I II III IV V][classe-1] %></span>
+            <span class="ml-1">Classe</span>
+          </button>
         <% end %>
+      </nav>
+
+      <%# Toolbar %>
+      <div class="flex flex-wrap items-center gap-2.5 mb-6">
+        <div class="relative flex-1 min-w-[280px]">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" width="14" height="14"
+               viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 L14 14" stroke-linecap="round"/>
+          </svg>
+          <input type="text"
+                 placeholder="Cerca titolo, autore o ISBN…"
+                 data-classifiche-target="search"
+                 data-action="input->classifiche#filter"
+                 class="w-full bg-stone-100 border border-stone-200 rounded-md pl-9 pr-3 py-2
+                        text-sm focus:outline-none focus:border-stone-400 focus:bg-white">
+        </div>
+        <select data-classifiche-target="editoreFilter"
+                data-action="change->classifiche#filter"
+                class="bg-stone-100 border border-stone-200 rounded-md px-3 py-2 text-sm text-stone-700">
+          <option value="all">Tutti gli editori</option>
+          <% @classifiche.values.flatten.flat_map(&:righe_capo).map(&:editore).compact.uniq.sort.each do |e| %>
+            <option value="<%= e %>"><%= e %></option>
+          <% end %>
+        </select>
+        <button type="button"
+                data-action="click->classifiche#toggleDemoted"
+                data-classifiche-target="toggleHide"
+                class="px-3 py-2 text-sm rounded-md border border-dashed border-stone-300
+                       text-stone-500 hover:bg-stone-100">Nascondi 👎</button>
       </div>
 
-      <div data-divider class="my-6 border-t border-gray-300 pt-4" hidden>
-        <h3 class="text-sm uppercase tracking-wide text-gray-500 mb-3">👎</h3>
-      </div>
+      <%# Pannelli per ogni classe %>
+      <% @classifiche.each_with_index do |(classe, materie), i| %>
+        <section role="tabpanel"
+                 data-classifiche-target="panel"
+                 data-classe-section="<%= classe %>"
+                 data-classe="<%= classe %>"
+                 data-roman="<%= %w[I II III IV V][classe-1] %>"
+                 data-materie-count="<%= materie.size %>"
+                 <%= "hidden" unless i.zero? %>>
 
-      <div data-zone="demoted" class="bg-gray-100 rounded p-4">
-        <%# popolato dinamicamente dal JS %>
-      </div>
-    </section>
-  <% end %>
+          <div data-zone="primary">
+            <% materie.each do |materia| %>
+              <%= render "classifica", classe: classe, materia: materia %>
+            <% end %>
+          </div>
+
+          <div data-divider class="mt-9 pt-5 border-t border-dashed border-stone-300" hidden>
+            <h3 class="font-serif italic text-lg text-stone-500 m-0 mb-3">Da controllare</h3>
+          </div>
+
+          <div data-zone="demoted" class="space-y-0"></div>
+        </section>
+      <% end %>
+    </main>
+  </div>
 </div>
-
-<script>
-(function () {
-  const STORAGE_KEY = "capo:demoted";
-  const HIDE_KEY    = "capo:hideDemoted";
-  const TAB_KEY     = "capo:activeTab";
-
-  function loadDemoted() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return new Set();
-      const arr = JSON.parse(raw);
-      return new Set(Array.isArray(arr) ? arr : []);
-    } catch (_) { return new Set(); }
-  }
-  function saveDemoted(set) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...set])); } catch (_) {}
-  }
-  function loadHide() {
-    try { return localStorage.getItem(HIDE_KEY) === "true"; } catch (_) { return false; }
-  }
-  function saveHide(v) {
-    try { localStorage.setItem(HIDE_KEY, v ? "true" : "false"); } catch (_) {}
-  }
-  function loadTab() {
-    try { return localStorage.getItem(TAB_KEY); } catch (_) { return null; }
-  }
-  function saveTab(t) {
-    try { localStorage.setItem(TAB_KEY, t); } catch (_) {}
-  }
-
-  const root = document.querySelector("[data-demote-root]");
-  if (!root) return;
-
-  const demoted = loadDemoted();
-  let hideDemoted = loadHide();
-  let activeTab = loadTab();
-
-  const sections = [...root.querySelectorAll("[data-classe-section]")];
-  const tabs = [...root.querySelectorAll('[data-action="select-tab"]')];
-  const validTabs = sections.map(s => s.dataset.classeSection);
-  if (!validTabs.includes(activeTab)) activeTab = validTabs[0];
-
-  function applyTab() {
-    sections.forEach(s => { s.hidden = s.dataset.classeSection !== activeTab; });
-    tabs.forEach(btn => {
-      const isActive = btn.dataset.tab === activeTab;
-      btn.setAttribute("aria-selected", isActive);
-      btn.classList.toggle("border-blue-500", isActive);
-      btn.classList.toggle("text-blue-600", isActive);
-      btn.classList.toggle("border-transparent", !isActive);
-      btn.classList.toggle("text-gray-500", !isActive);
-      btn.classList.toggle("hover:text-gray-700", !isActive);
-    });
-  }
-
-  function moveAndUpdateButtons(materia, isDemoted) {
-    const section = materia.closest("[data-classe-section]");
-    const target = section.querySelector(
-      isDemoted ? '[data-zone="demoted"]' : '[data-zone="primary"]'
-    );
-    if (materia.parentNode !== target) target.appendChild(materia);
-    const downBtn = materia.querySelector('[data-action="demote"]');
-    const upBtn   = materia.querySelector('[data-action="promote"]');
-    if (downBtn) downBtn.hidden = isDemoted;
-    if (upBtn)   upBtn.hidden   = !isDemoted;
-  }
-
-  function updateToggleLabel() {
-    const btn = root.querySelector("[data-toggle-target]");
-    if (btn) btn.textContent = hideDemoted ? "Mostra 👎" : "Nascondi 👎";
-  }
-
-  function refreshZones() {
-    sections.forEach((section) => {
-      const demotedZone = section.querySelector('[data-zone="demoted"]');
-      const divider = section.querySelector("[data-divider]");
-      const hasDemoted = demotedZone.children.length > 0;
-      divider.hidden = !hasDemoted || hideDemoted;
-      demotedZone.hidden = !hasDemoted || hideDemoted;
-    });
-  }
-
-  function initializeLayout() {
-    sections.forEach((section) => {
-      const classe = section.dataset.classeSection;
-      section.querySelectorAll("[data-materia-codice]").forEach((materia) => {
-        const codice = materia.dataset.materiaCodice;
-        const isDemoted = demoted.has(`${classe}:${codice}`);
-        moveAndUpdateButtons(materia, isDemoted);
-        materia.open = !isDemoted;
-      });
-    });
-    refreshZones();
-  }
-
-  root.addEventListener("click", (e) => {
-    const target = e.target.closest("[data-action]");
-    if (!target || !root.contains(target)) return;
-    const action = target.dataset.action;
-
-    if (action === "demote" || action === "promote") {
-      e.preventDefault();
-      e.stopPropagation();
-      const materia = target.closest("[data-materia-codice]");
-      const section = materia.closest("[data-classe-section]");
-      const key = `${section.dataset.classeSection}:${materia.dataset.materiaCodice}`;
-      const isDemoting = action === "demote";
-      if (isDemoting) demoted.add(key); else demoted.delete(key);
-      saveDemoted(demoted);
-      moveAndUpdateButtons(materia, isDemoting);
-      materia.open = !isDemoting;
-      refreshZones();
-    } else if (action === "toggle-demoted") {
-      hideDemoted = !hideDemoted;
-      saveHide(hideDemoted);
-      updateToggleLabel();
-      refreshZones();
-    } else if (action === "select-tab") {
-      activeTab = target.dataset.tab;
-      saveTab(activeTab);
-      applyTab();
-    }
-  });
-
-  applyTab();
-  updateToggleLabel();
-  initializeLayout();
-})();
-</script>

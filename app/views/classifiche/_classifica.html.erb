@@ -1,52 +1,131 @@
 <% righe = ClassificaQuery.new(classe: classe, materia: materia).righe %>
 <% tot_sezioni = righe.sum { |r| r["sezioni"].to_i } %>
 <% tot_alunni  = righe.sum { |r| r["alunni"].to_i } %>
+<% tot_titoli  = righe.size %>
 
-<details class="mb-6 border rounded p-4"
-         data-materia-codice="<%= materia.codice %>" open>
-  <summary class="font-medium text-lg cursor-pointer flex items-center gap-3 flex-wrap">
-    <span class="flex-1">
-      <%= materia.nome %> <span class="text-gray-500">(<%= materia.codice %>)</span>
+<details class="group mb-4 rounded-xl border border-stone-200 bg-white overflow-hidden
+                data-[demoted=true]:bg-stone-100/70 data-[demoted=true]:border-dashed
+                data-[demoted=true]:border-stone-300 transition-colors"
+         data-materia-codice="<%= materia.codice %>"
+         data-materia-nome="<%= materia.nome %>"
+         data-classifiche-target="materia"
+         open>
+
+  <summary class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 px-5 py-4
+                  cursor-pointer select-none hover:bg-stone-50 list-none
+                  group-open:border-b group-open:border-stone-200">
+    <span class="font-mono text-[11px] tracking-wider text-stone-500
+                 bg-stone-100 px-2 py-0.5 rounded"><%= materia.codice %></span>
+
+    <span class="font-serif text-2xl leading-tight tracking-tight"><%= materia.nome %></span>
+
+    <span class="hidden sm:flex items-baseline gap-5 tabular-nums">
+      <span><span class="font-serif text-xl"><%= number_with_delimiter tot_sezioni %></span>
+            <span class="text-[11px] uppercase tracking-[0.1em] text-stone-500 ml-1">sez</span></span>
+      <span><span class="font-serif text-xl"><%= number_with_delimiter tot_alunni %></span>
+            <span class="text-[11px] uppercase tracking-[0.1em] text-stone-500 ml-1">alunni</span></span>
+      <span><span class="font-serif text-xl"><%= tot_titoli %></span>
+            <span class="text-[11px] uppercase tracking-[0.1em] text-stone-500 ml-1">titoli</span></span>
     </span>
-    <span class="text-sm text-gray-600 whitespace-nowrap">
-      <%= number_with_delimiter tot_sezioni %> sez · <%= number_with_delimiter tot_alunni %> al
+
+    <span class="flex items-center gap-1">
+      <button type="button"
+              class="w-7 h-7 rounded-md text-stone-400 hover:bg-stone-100 hover:text-stone-700
+                     inline-flex items-center justify-center"
+              data-action="demote"
+              title="Sposta in 'Da controllare'">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.4" stroke-linejoin="round">
+          <path d="M6 14V9H3a1 1 0 0 1-1-1.2L3.2 3.2A1.5 1.5 0 0 1 4.7 2H10a2 2 0 0 1 2 2v5l-3 5a1.5 1.5 0 0 1-3-.5z"/>
+          <path d="M12 2h2v8h-2"/>
+        </svg>
+      </button>
+      <button type="button"
+              class="w-7 h-7 rounded-md text-orange-700 hover:bg-orange-50
+                     inline-flex items-center justify-center"
+              data-action="promote" hidden
+              title="Riporta su">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.4" stroke-linejoin="round">
+          <path d="M6 2v5H3a1 1 0 0 0-1 1.2l1.2 4.6A1.5 1.5 0 0 0 4.7 14H10a2 2 0 0 0 2-2V7L9 2a1.5 1.5 0 0 0-3 .5z"/>
+          <path d="M12 14h2V6h-2"/>
+        </svg>
+      </button>
+      <span class="ml-1 text-stone-400 group-open:rotate-90 transition-transform">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round"><path d="M4 2 L8 6 L4 10"/></svg>
+      </span>
     </span>
-    <button type="button"
-            class="text-base px-2 py-1 border rounded hover:bg-gray-200"
-            data-action="demote"
-            title="OK — clicca per spostare in 'Da controllare'">👍</button>
-    <button type="button"
-            class="text-base px-2 py-1 border rounded hover:bg-gray-200"
-            data-action="promote"
-            title="Da controllare — clicca per riportare su" hidden>👎</button>
   </summary>
 
-  <table class="w-full mt-4 text-sm">
-    <thead>
-      <tr class="text-left border-b">
-        <th class="py-1 pr-3">#</th>
-        <th class="py-1 pr-3">Titolo</th>
-        <th class="py-1 pr-3">ISBN</th>
-        <th class="py-1 pr-3">Editore</th>
-        <th class="py-1 pr-3 text-right">Sezioni</th>
-        <th class="py-1 pr-3 text-right">Alunni</th>
-        <th class="py-1 pr-3 text-right">Quota %</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% righe.each_with_index do |r, i| %>
-        <tr class="border-b">
-          <td class="py-1 pr-3"><%= i + 1 %></td>
-          <td class="py-1 pr-3"><%= r["titolo"] %></td>
-          <td class="py-1 pr-3 font-mono text-xs"><%= r["isbn"] %></td>
-          <td class="py-1 pr-3"><%= r["editore"] %></td>
-          <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["sezioni"] %></td>
-          <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["alunni"] %></td>
-          <td class="py-1 pr-3 text-right"><%= number_with_precision r["quota"], precision: 1 %></td>
+  <div class="px-5 pb-5">
+    <% top = righe.first(10) %>
+    <table class="w-full text-sm tabular-nums">
+      <thead>
+        <tr class="text-left">
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200 w-10">#</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200">Titolo</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200">ISBN</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200">Editore</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200 text-right">Sezioni</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200 text-right">Alunni</th>
+          <th class="py-2.5 pr-3 text-[10px] uppercase tracking-[0.12em] text-stone-500 font-medium border-b border-stone-200 text-right w-[160px]">Quota</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody data-classifiche-target="rows">
+        <% righe.each_with_index do |r, i| %>
+          <tr class="border-b border-stone-100 last:border-0 hover:bg-stone-50/60
+                     <%= "hidden" if i >= 10 %>"
+              data-row
+              data-extra="<%= i >= 10 %>"
+              data-titolo="<%= r["titolo"].to_s.downcase %>"
+              data-autore="<%= r["autore"].to_s.downcase %>"
+              data-isbn="<%= r["isbn"] %>"
+              data-editore="<%= r["editore"] %>">
+            <td class="py-2.5 pr-3">
+              <span class="font-serif italic text-lg <%= i.zero? ? 'text-orange-700 not-italic font-semibold' : 'text-stone-400' %>">
+                <%= i + 1 %>
+              </span>
+            </td>
+            <td class="py-2.5 pr-3">
+              <div class="flex flex-col">
+                <span class="text-stone-900 font-medium"><%= r["titolo"] %></span>
+                <span class="text-[11.5px] text-stone-400"><%= r["autore"] %></span>
+              </div>
+            </td>
+            <td class="py-2.5 pr-3 font-mono text-[11px] text-stone-500"><%= r["isbn"] %></td>
+            <td class="py-2.5 pr-3">
+              <span class="inline-block text-[11.5px] text-stone-700 bg-stone-50 border border-stone-200
+                           rounded-full px-2.5 py-0.5 whitespace-nowrap"><%= r["editore"] %></span>
+            </td>
+            <td class="py-2.5 pr-3 text-right"><%= number_with_delimiter r["sezioni"] %></td>
+            <td class="py-2.5 pr-3 text-right text-stone-500"><%= number_with_delimiter r["alunni"] %></td>
+            <td class="py-2.5 pr-3 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <div class="w-[70px] h-1 bg-stone-200 rounded overflow-hidden">
+                  <div class="h-full <%= i.zero? ? 'bg-orange-700' : 'bg-stone-400/60' %>"
+                       style="width: <%= [r["quota"], 100].min %>%"></div>
+                </div>
+                <span class="text-xs text-stone-700 min-w-[40px] text-right">
+                  <%= number_with_precision r["quota"], precision: 1 %>%
+                </span>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
-  <%= render "aggregato_editori", classe: classe, materia: materia %>
+    <% if righe.size > 10 %>
+      <div class="text-center mt-3">
+        <button type="button"
+                data-action="click->classifiche#showAll"
+                class="text-xs tracking-wide text-stone-500 hover:text-orange-700 px-3 py-2 rounded-md hover:bg-stone-100">
+          Mostra tutti (<%= righe.size %>) ↓
+        </button>
+      </div>
+    <% end %>
+
+    <%= render "aggregato_editori", classe: classe, materia: materia %>
+  </div>
 </details>
