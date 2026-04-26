@@ -118,7 +118,6 @@
         const isDemoted = demoted.has(key);
         const target = isDemoted ? demotedZone : primary;
         if (materia.parentNode !== target) target.appendChild(materia);
-        materia.open = !isDemoted;
         const downBtn = materia.querySelector('[data-action="demote"]');
         const upBtn   = materia.querySelector('[data-action="promote"]');
         if (downBtn) downBtn.hidden = isDemoted;
