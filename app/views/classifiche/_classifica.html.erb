@@ -1,0 +1,36 @@
+<details class="mb-6 border rounded p-4" open>
+  <summary class="font-medium text-lg cursor-pointer">
+    <%= materia.nome %> <span class="text-gray-500">(<%= materia.codice %>)</span>
+  </summary>
+
+  <% righe = ClassificaQuery.new(classe: classe, materia: materia).righe %>
+
+  <table class="w-full mt-4 text-sm">
+    <thead>
+      <tr class="text-left border-b">
+        <th class="py-1 pr-3">#</th>
+        <th class="py-1 pr-3">Titolo</th>
+        <th class="py-1 pr-3">Autore</th>
+        <th class="py-1 pr-3">Editore</th>
+        <th class="py-1 pr-3 text-right">Sezioni</th>
+        <th class="py-1 pr-3 text-right">Alunni</th>
+        <th class="py-1 pr-3 text-right">Quota %</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% righe.each_with_index do |r, i| %>
+        <tr class="border-b">
+          <td class="py-1 pr-3"><%= i + 1 %></td>
+          <td class="py-1 pr-3"><%= r["titolo"] %></td>
+          <td class="py-1 pr-3"><%= r["autore"] %></td>
+          <td class="py-1 pr-3"><%= r["editore"] %></td>
+          <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["sezioni"] %></td>
+          <td class="py-1 pr-3 text-right"><%= number_with_delimiter r["alunni"] %></td>
+          <td class="py-1 pr-3 text-right"><%= number_with_precision r["quota"], precision: 1 %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render "aggregato_editori", classe: classe, materia: materia %>
+</details>

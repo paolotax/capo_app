@@ -19,6 +19,8 @@ class CaricamentiControllerTest < ActionDispatch::IntegrationTest
       post caricamenti_path, params: { file: file }
     end
     assert_redirected_to classifica_path
+    follow_redirect!
+    assert_response :success
   end
 
   test "POST create with no file shows error" do
