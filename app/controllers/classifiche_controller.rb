@@ -1,5 +1,5 @@
 class ClassificheController < ApplicationController
-  CLASSI = [1, 4].freeze
+  CLASSI = [1, 2, 3, 4, 5].freeze
 
   def show
     return redirect_to(new_caricamento_path) if RigaCapo.none?
