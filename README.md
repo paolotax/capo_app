@@ -22,3 +22,7 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+## Auth
+
+In production, set `APP_USERNAME` and `APP_PASSWORD` env vars. HTTP basic auth gates the entire app. In development/test no auth is required.
