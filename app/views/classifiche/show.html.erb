@@ -7,10 +7,8 @@
       </span>
       <button type="button"
               class="px-3 py-1 border rounded hover:bg-gray-100"
-              data-action="hide-all-demoted">Nascondi "Da controllare"</button>
-      <button type="button"
-              class="px-3 py-1 border rounded hover:bg-gray-100"
-              data-action="show-demoted">Mostra "Da controllare"</button>
+              data-action="toggle-demoted"
+              data-toggle-target>Nascondi "Da controllare"</button>
       <%= link_to "Sostituisci file", new_caricamento_path, class: "underline" %>
     </div>
   </header>
@@ -117,6 +115,11 @@
     if (upBtn)   upBtn.hidden   = !isDemoted;
   }
 
+  function updateToggleLabel() {
+    const btn = root.querySelector("[data-toggle-target]");
+    if (btn) btn.textContent = hideDemoted ? 'Mostra "Da controllare"' : 'Nascondi "Da controllare"';
+  }
+
   function refreshZones() {
     sections.forEach((section) => {
       const demotedZone = section.querySelector('[data-zone="demoted"]');
@@ -157,13 +160,10 @@
       moveAndUpdateButtons(materia, isDemoting);
       materia.open = !isDemoting;
       refreshZones();
-    } else if (action === "hide-all-demoted") {
-      hideDemoted = true;
-      saveHide(true);
-      refreshZones();
-    } else if (action === "show-demoted") {
-      hideDemoted = false;
-      saveHide(false);
+    } else if (action === "toggle-demoted") {
+      hideDemoted = !hideDemoted;
+      saveHide(hideDemoted);
+      updateToggleLabel();
       refreshZones();
     } else if (action === "select-tab") {
       activeTab = target.dataset.tab;
@@ -173,6 +173,7 @@
   });
 
   applyTab();
+  updateToggleLabel();
   initializeLayout();
 })();
 </script>
