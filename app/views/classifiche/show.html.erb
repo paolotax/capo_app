@@ -75,6 +75,15 @@
         </div>
       </header>
 
+      <%# Caricamento info + link "Sostituisci file" (mobile fallback per la sidebar) %>
+      <div class="lg:hidden mb-4 flex flex-wrap items-baseline justify-between gap-2 text-xs text-stone-500">
+        <span class="font-mono text-[11px] text-stone-700 break-all">
+          <%= @ultimo_caricamento.filename %>
+        </span>
+        <%= link_to "Sostituisci file →", new_caricamento_path,
+              class: "text-orange-700 border-b border-orange-700/60 hover:border-orange-700" %>
+      </div>
+
       <%# Tab inline (mobile fallback per la sidebar) %>
       <nav class="lg:hidden flex gap-1 p-1 mb-6 bg-stone-100 rounded-lg w-fit" role="tablist">
         <% @classifiche.each_with_index do |(classe, _), i| %>
