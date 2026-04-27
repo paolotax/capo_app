@@ -1,19 +1,82 @@
-<div class="mx-auto max-w-xl p-8">
-  <h1 class="text-2xl font-bold mb-6">Carica file ASCII</h1>
+<% content_for :title, "Carica adozioni" %>
 
-  <% if @error.present? %>
-    <p class="error mb-4 text-red-600"><%= @error %></p>
-  <% end %>
+<div class="min-h-screen bg-stone-50 text-stone-900">
+  <div class="max-w-2xl mx-auto px-6 lg:px-12 py-16">
 
-  <%= form_with url: caricamenti_path, multipart: true, local: true, class: "space-y-4" do %>
-    <input type="file" name="file" accept=".txt" required class="block">
-    <button type="submit" class="bg-black text-white px-4 py-2 rounded">Carica</button>
-  <% end %>
+    <div class="flex items-baseline gap-2 mb-1">
+      <span class="font-serif italic text-3xl leading-none text-orange-700">✺</span>
+      <span class="font-serif text-xl tracking-tight">Adozioni</span>
+      <span class="font-serif italic text-orange-700 text-base">2025</span>
+    </div>
+    <div class="text-[11px] uppercase tracking-[0.14em] text-stone-500 mb-12">
+      Carica file ASCII
+    </div>
 
-  <% if (last = Caricamento.order(:caricato_il).last) %>
-    <p class="mt-8 text-sm text-gray-600">
-      Ultimo caricamento: <%= last.filename %> — <%= l last.caricato_il, format: :short %>
-      (<%= last.righe_count %> righe)
+    <h1 class="font-serif font-normal text-5xl lg:text-6xl leading-[0.95] tracking-tight m-0 mb-8">
+      Carica
+      <em class="italic text-orange-700">adozioni</em>
+    </h1>
+
+    <p class="text-stone-600 mb-8 leading-relaxed">
+      Seleziona il file <span class="font-mono text-sm bg-stone-100 px-1.5 py-0.5 rounded">.txt</span>
+      esportato dal capo. Sostituirà completamente i dati attuali e
+      aggiornerà tutte le classifiche.
     </p>
-  <% end %>
+
+    <% if flash[:notice] %>
+      <div class="mb-6 px-4 py-3 rounded-md bg-orange-50 border border-orange-200 text-orange-900 text-sm">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <% if @error.present? %>
+      <div class="mb-6 px-4 py-3 rounded-md bg-red-50 border border-red-200 text-red-900 text-sm">
+        <%= @error %>
+      </div>
+    <% end %>
+
+    <%= form_with url: caricamenti_path, multipart: true, local: true,
+                  class: "space-y-6" do %>
+      <label class="block">
+        <span class="block text-[11px] uppercase tracking-[0.12em] text-stone-500 mb-2">File</span>
+        <div class="border-2 border-dashed border-stone-300 rounded-xl bg-white px-6 py-8
+                    hover:border-stone-400 transition-colors">
+          <input type="file" name="file" accept=".txt" required
+                 class="block w-full text-sm text-stone-700
+                        file:mr-4 file:py-2 file:px-4 file:rounded-md
+                        file:border-0 file:text-sm file:font-medium
+                        file:bg-stone-900 file:text-stone-50
+                        hover:file:bg-stone-700 cursor-pointer">
+        </div>
+      </label>
+
+      <div class="flex items-center justify-between">
+        <%= link_to classifica_path,
+              class: "text-sm text-stone-500 hover:text-stone-700 underline underline-offset-2" do %>
+          ← Torna alle classifiche
+        <% end %>
+        <button type="submit"
+                class="px-5 py-2.5 rounded-md bg-orange-700 text-stone-50 text-sm font-medium
+                       hover:bg-orange-800 transition-colors">
+          Carica e aggiorna
+        </button>
+      </div>
+    <% end %>
+
+    <% if (last = Caricamento.order(:caricato_il).last) %>
+      <div class="mt-16 pt-8 border-t border-stone-200">
+        <div class="text-[11px] uppercase tracking-[0.14em] text-stone-500 mb-3">
+          Ultimo caricamento
+        </div>
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          <div>
+            <div class="font-mono text-sm text-stone-700"><%= last.filename %></div>
+            <div class="text-xs text-stone-500 mt-0.5">
+              <%= l last.caricato_il, format: :short %> · <%= number_with_delimiter last.righe_count %> righe
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
