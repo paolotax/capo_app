@@ -14,7 +14,7 @@ class ClassificheControllerTest < ActionDispatch::IntegrationTest
     RigaCapo.create!(caricamento: car, materia: Materia.find_by(codice: 200),
                      classe: 4, isbn: "1", titolo: "FOO", autore: "a", editore: "EdX",
                      sezioni: 10, alunni: 170, scorrimento: false, anno: "2025",
-                     editore_codice: "EX", flag_elimina_1: "", flag_elimina_2: "")
+                     editore_codice: "EX")
 
     get classifica_path
     assert_response :success

@@ -47,6 +47,30 @@ class CaricamentoCapo::ImporterTest < ActiveSupport::TestCase
     assert_equal 999,           placeholder.ordine
   end
 
+  test "imports fixed-width files end-to-end" do
+    fixed = Rack::Test::UploadedFile.new(
+      Rails.root.join("test/fixtures/files/sample_capo_fixed.txt"),
+      "text/plain"
+    )
+
+    assert_difference -> { Caricamento.count } => 1,
+                      -> { RigaCapo.count }    => 17 do
+      CaricamentoCapo::Importer.new(fixed).call
+    end
+
+    car = Caricamento.last
+    assert_equal "sample_capo_fixed.txt", car.filename
+    assert_equal 17, car.righe_count
+
+    bottega = RigaCapo.find_by(isbn: "9791220410731", classe: 4)
+    assert_equal "BOTTEGA DELLE STORIE (LA)", bottega.titolo
+    assert_equal 59041, bottega.alunni
+    assert_equal 3204,  bottega.sezioni
+
+    tante = RigaCapo.find_by(isbn: "9788861619999", classe: 4)
+    assert_equal "TANTE VOCI 4 (MODALITÀ DIGITALE C)", tante.titolo
+  end
+
   test "rolls back on parser error" do
     bad = Tempfile.new(["broken", ".txt"]).tap { |f| f.write("not enough cols\n"); f.rewind }
     upload = Rack::Test::UploadedFile.new(bad.path, "text/plain", original_filename: "broken.txt")

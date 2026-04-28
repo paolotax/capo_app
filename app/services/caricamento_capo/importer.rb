@@ -71,8 +71,10 @@ module CaricamentoCapo
             alunni:           sub[:alunni],
             anno:             row[:anno],
             scorrimento:      sub[:classe] == 5,
-            flag_elimina_1:   row[:flag_elimina_1],
-            flag_elimina_2:   row[:flag_elimina_2],
+            flag_a:           row[:flag_a],
+            flag_b:           row[:flag_b],
+            flag_d:           row[:flag_d],
+            tipo_libro:       row[:tipo_libro],
             created_at:       now,
             updated_at:       now
           }

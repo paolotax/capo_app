@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_04_25_133041) do
+ActiveRecord::Schema[8.2].define(version: 2026_04_28_143356) do
   create_table "caricamenti", force: :cascade do |t|
     t.datetime "caricato_il"
     t.datetime "created_at", null: false
@@ -37,12 +37,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_04_25_133041) do
     t.datetime "created_at", null: false
     t.string "editore"
     t.string "editore_codice"
-    t.string "flag_elimina_1"
-    t.string "flag_elimina_2"
+    t.string "flag_a"
+    t.string "flag_b"
+    t.string "flag_d"
     t.string "isbn"
     t.integer "materia_id", null: false
     t.boolean "scorrimento"
     t.integer "sezioni"
+    t.string "tipo_libro"
     t.string "titolo"
     t.datetime "updated_at", null: false
     t.index ["caricamento_id"], name: "index_righe_capo_on_caricamento_id"
